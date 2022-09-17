@@ -8,9 +8,12 @@ contract EventTickets {
 
     /*
         Create a public state variable called owner.
+        
         Use the appropriate keyword to create an associated getter function.
         Use the appropriate keyword to allow ether transfers.
      */
+     address owner public;
+
 
     uint   TICKET_PRICE = 100 wei;
 
@@ -20,7 +23,14 @@ contract EventTickets {
         Choose the appropriate variable type for each field.
         The "buyers" field should keep track of addresses and how many tickets each buyer purchases.
     */
-
+    struct Event {
+        string memory description;
+        string memory website;
+        unit totalTickets;
+        unit sales;
+        uint buyers;
+        bool isOpen;
+    }
    
     /*
         Define 3 logging events.
@@ -28,14 +38,17 @@ contract EventTickets {
         LogGetRefund should provide information about the refund requester and the number of tickets refunded.
         LogEndSale should provide infromation about the contract owner and the balance transferred to them.
     */
-    
+
     
 
     /*
         Create a modifier that throws an error if the msg.sender is not the owner.
     */
     
-    
+    modifier isOwner(){
+        require(owner = [msg.sender],"Only owner authorized");
+        _;
+    }
 
     /*
         Define a constructor.
@@ -43,6 +56,10 @@ contract EventTickets {
         Set the owner to the creator of the contract.
         Set the appropriate myEvent details.
     */
+    constructor(string memory description, string memory website, uint totalTickets){
+        owner = msg.sender;
+
+    }
 
     /*
         Define a function called readEvent() that returns the event details.
@@ -50,10 +67,10 @@ contract EventTickets {
         The returned details should be called description, website, uint totalTickets, uint sales, bool isOpen in that order.
     */
     function readEvent()
-        public
+
         returns(string memory description, string memory website, uint totalTickets, uint sales, bool isOpen)
     {
-
+        return(description, website, totalTickets, sales, isOpen)
     }
 
     /*
@@ -61,7 +78,9 @@ contract EventTickets {
         This function takes 1 argument, an address and
         returns the number of tickets that address has purchased.
     */
-
+    function getBuyerTicketCount(address _address) public view returns(uint totalTickets) {
+        return(_address.totalTickets);
+    }
     /*
         Define a function called buyTickets().
         This function allows someone to purchase tickets for the event.
@@ -77,7 +96,9 @@ contract EventTickets {
             - refund any surplus value sent with the transaction
             - emit the appropriate event
     */
+    function buyTickets(uint totalTickets) public isOpen() {
 
+    }
     /*
         Define a function called getRefund().
         This function allows someone to get a refund for tickets for the account they purchased from.
@@ -87,7 +108,9 @@ contract EventTickets {
             - Transfer the appropriate amount to the refund requester.
             - Emit the appropriate event.
     */
+    function getRefund() publick {
 
+    }
     /*
         Define a function called endSale().
         This function will close the ticket sales.
@@ -97,4 +120,7 @@ contract EventTickets {
             - transfer the contract balance to the owner
             - emit the appropriate event
     */
+    function endSale() public isOwner(){
+
+    }
 }
