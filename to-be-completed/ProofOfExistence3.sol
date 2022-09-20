@@ -4,17 +4,32 @@ contract ProofOfExistence3 {
 
   mapping (bytes32 => bool) private proofs;
   
+
+  
+  struct doc{
+    address storedBy;
+    uint256 storedOn;
+  }
+
+  mapping (bytes32 => address) storedBy;
+  mapping (bytes32 => uint256) storedOn;
+
   // store a proof of existence in the contract state
+
   function storeProof(bytes32 proof) 
     internal 
   {
-
+    proofs[proof] = true;
   }
   
   // calculate and store the proof for a document
   function notarize(string memory document) 
     public 
   { 
+    bytes32 proof = proofFor(document);
+    storedBy[proof] = msg.sender;
+    storedOn[proof] = block.timestamp;
+    storeProof(proof);
 
   }
   
@@ -24,7 +39,7 @@ contract ProofOfExistence3 {
     private 
     returns (bytes32) 
   {
- 
+    return keccak256(abi.encodePacked(document));
   }
   
   // check if a document has been notarized
@@ -33,7 +48,8 @@ contract ProofOfExistence3 {
     view 
     returns (bool) 
   {
-
+    bytes32 proof = proofFor(document);
+    return hasProof(proof);
   }
 
   // returns true if proof is stored
@@ -42,6 +58,11 @@ contract ProofOfExistence3 {
     view 
     returns(bool) 
   {
-
+     if(proofs[proof] == true){
+      return true;
+    }
+    else{
+      return false;
+    }
   }
 }

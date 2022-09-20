@@ -1,16 +1,21 @@
+//SPDX-License-Identifier:MIT
+
 pragma solidity ^0.8.1.0;
 
 contract ProofOfExistence2 {
 
   // state
   bytes32[] private proofs;
+  mapping (bytes32 => address) storedBy;
+  mapping (bytes32 => uint256) storedOn;
+
 
   // store a proof of existence in the contract state
   // *transactional function*
   function storeProof(bytes32 proof) 
     public 
   {
-  
+    proofs.push(proof);
   }
 
   // calculate and store the proof for a document
@@ -18,6 +23,11 @@ contract ProofOfExistence2 {
   function notarize(string calldata document) 
     external 
   {
+    bytes32 proof = proofFor(document);
+    storedBy[proof] = msg.sender;
+    storedOn[proof] = block.timestamp;
+    storeProof(proof);
+
 
   }
 
@@ -28,7 +38,7 @@ contract ProofOfExistence2 {
     public 
     returns (bytes32) 
   {
-    
+    return sha256(abi.encodePacked(document));
   }
 
   // check if a document has been notarized
@@ -38,7 +48,8 @@ contract ProofOfExistence2 {
     view 
     returns (bool) 
   {
-    
+    bytes32 proof = proofFor(document);
+    return hasProof(proof);
   }
 
   // returns true if proof is stored
@@ -48,5 +59,14 @@ contract ProofOfExistence2 {
     view 
     returns (bool) 
   {
-   
+   for(uint i =0 ;i < proofs.length ;i ++){
+     if(proofs[i] == proof){
+       return true;
+     }
+     else{
+       return false;
+     }
+   }
+
+}
 }
